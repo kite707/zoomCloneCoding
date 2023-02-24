@@ -18,12 +18,18 @@ const handleListen = () => console.log('server is running');
 const server = http.createServer(app);
 const wss = new WebSocket.Server({server});
 
+const sockets = [];
+
 wss.on('connection',(socket)=>{
-    console.log("socket connected on server.js");
     console.log("Connected to Browser");
+    sockets.push(socket);
     socket.on("close",()=>console.log("disconnected from browser")); //브라우저 창을 닫으면 실행됨. 이벤트리스너와 같음.
     socket.on("message",(message)=>{
-        console.log(`message from browser is ${message}`);
+        console.log(message.toString('utf-8'));
+        //socket.send(message.toString('utf-8')) //나에게만 메시지를 다시 보내주는 코드
+        sockets.forEach((asocket)=>{
+            asocket.send(message.toString('utf-8')); //연결된 모든 connection에게 메시지를 보내줌
+        })
     })
     socket.send("hello! i'm backend socket");
 })
