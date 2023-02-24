@@ -10,3 +10,7 @@ websocket.addEventListener("message",(message)=>{
 websocket.addEventListener("close",()=>{
     console.log("disconnected from server");
 })
+
+setTimeout(()=>{
+    websocket.send("hello! i'm browser socket!!");
+},10000)//10초뒤 위와 같은 메시지 보냄.

@@ -21,6 +21,10 @@ const wss = new WebSocket.Server({server});
 wss.on('connection',(socket)=>{
     console.log("socket connected on server.js");
     console.log("Connected to Browser");
+    socket.on("close",()=>console.log("disconnected from browser")); //브라우저 창을 닫으면 실행됨. 이벤트리스너와 같음.
+    socket.on("message",(message)=>{
+        console.log(`message from browser is ${message}`);
+    })
     socket.send("hello! i'm backend socket");
 })
 server.listen(3000,handleListen);
