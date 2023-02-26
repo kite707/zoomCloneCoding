@@ -31,6 +31,5 @@ wss.on('connection',(socket)=>{
             asocket.send(message.toString('utf-8')); //연결된 모든 connection에게 메시지를 보내줌
         })
     })
-    socket.send("hello! i'm backend socket");
 })
 server.listen(3000,handleListen);
