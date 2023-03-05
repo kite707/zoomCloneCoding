@@ -1,6 +1,7 @@
 //서버단 코드
 import express from 'express';
 import http from 'http';
+import SocketIo, { Socket } from 'socket.io';
 import WebSocket from 'ws';
 
 const app = express();
@@ -15,30 +16,11 @@ app.use('/public', express.static(__dirname + '/public'));
 
 const handleListen = () => console.log('server is running on port 3000');
 
-const server = http.createServer(app);
-const wss = new WebSocket.Server({ server });
+const httpServer = http.createServer(app);
+const wsServer = SocketIo(httpServer);
 
-const sockets = [];
-
-wss.on('connection', socket => {
-  console.log('Connected to Browser');
-  sockets.push(socket);
-  socket['nickName'] = 'Anon';
-  socket.on('close', () => console.log('disconnected from browser')); //브라우저 창을 닫으면 실행됨. 이벤트리스너와 같음.
-  socket.on('message', msg => {
-    const message = JSON.parse(msg.toString('utf-8'));
-    //socket.send(message.toString('utf-8')) //나에게만 메시지를 다시 보내주는 코드
-    switch (message.type) {
-      case 'new_message':
-        sockets.forEach(asocket => {
-          asocket.send(`${socket.nickName}: ${message.payload}`); //연결된 모든 connection에게 메시지를 보내줌
-        });
-        break;
-      case 'nickName':
-        console.log('this is nickname :', message.type, message.payload);
-        socket['nickName'] = message.payload;
-        break;
-    }
-  });
+wsServer.on('connection', socket => {
+  console.log(socket);
 });
-server.listen(3000, handleListen);
+
+httpServer.listen(3000, handleListen);
