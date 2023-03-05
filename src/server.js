@@ -1,8 +1,7 @@
 //서버단 코드
 import express from 'express';
 import http from 'http';
-import SocketIo, { Socket } from 'socket.io';
-import WebSocket from 'ws';
+import SocketIo from 'socket.io';
 
 const app = express();
 
@@ -20,7 +19,13 @@ const httpServer = http.createServer(app);
 const wsServer = SocketIo(httpServer);
 
 wsServer.on('connection', socket => {
-  console.log(socket);
+  socket.on('room', (msg, end) => {
+    console.log(msg, 'message payload: ', msg.payload);
+    setTimeout(() => {
+      console.log('a moment later...');
+      end();
+    }, 5000);
+  });
 });
 
 httpServer.listen(3000, handleListen);
