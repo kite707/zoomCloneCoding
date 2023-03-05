@@ -8,7 +8,8 @@
 - 프론트-백엔드 간 메시지 발신/수신
 - 닉네임, 받은 메시지 화면에 보여주기
 
-![](./image/chapter1.png)
+<center><img src="./image/chapter1.png" width="300" height="200"/></center>
+
 
 ### TODO
 - 내가 보낸 메시지는 **나를 제외한 사람**에게 전달하기
