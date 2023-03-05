@@ -10,12 +10,5 @@ html(lang="en")
     header 
         h1 server is work
     main 
-        form#nick
-            input(type="text",placeholder="choose a nickname",required)
-            button Save
-        ul
-        
-        form#message
-            input(type="text",placeholder="write a message to send",required)
-            button Send 
+    script(src="/socket.io/socket.io.js") 
     script(src="/public/js/app.js")
