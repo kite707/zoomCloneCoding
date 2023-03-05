@@ -22,3 +22,18 @@
 - WebSocket을 사용할 수 있으면 사용하나, WebSocket을 지원하지 않더라도 다른 것을 사용해서 통신이 가능하도록 함.
 - 프론트, 백엔드 간 실시간 통신을 지원.
 - WS보다 조금 무거움(WS : 119KB, Socket.io : 1.03MB)
+
+###2.1 Installing Socket.io
+**WS의 WebSocket Server 구축**
+> http서버를 만든 뒤, 새로운 웹소켓을 만들 때 HTTP를 위에 쌓아올려 구축
+```
+const server = http.createServer(app);
+const wss = new WebSocket.Server({ server });
+```
+
+**Socket.io의 Server 구축**
+```
+const server = http.createServer(app);
+const wss = SocketIo(server);
+```
+
