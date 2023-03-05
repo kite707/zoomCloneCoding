@@ -1,1 +1,16 @@
 # 니콜라스 줌 클론코딩
+
+## CHAPTER.1 CHAT WITH WEBSOCKETS Conclusions
+### REVIEW
+- 기본 환경 세팅
+    * babel, nodemon 환경 세팅
+    * prettier 세팅
+- 프론트-백엔드 간 메시지 발신/수신
+- 닉네임, 받은 메시지 화면에 보여주기
+
+![](./image/chapter1.png)
+
+### TODO
+- 내가 보낸 메시지는 **나를 제외한 사람**에게 전달하기
+- 백엔드에서 프론트로 메시지 보낼 때 json으로 보내기
+- 프론트에서 받은 json을 파싱하기
