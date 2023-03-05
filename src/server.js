@@ -23,13 +23,22 @@ const sockets = [];
 wss.on('connection', socket => {
   console.log('Connected to Browser');
   sockets.push(socket);
+  socket['nickName'] = 'Anon';
   socket.on('close', () => console.log('disconnected from browser')); //브라우저 창을 닫으면 실행됨. 이벤트리스너와 같음.
-  socket.on('message', message => {
-    console.log(message.toString('utf-8'));
+  socket.on('message', msg => {
+    const message = JSON.parse(msg.toString('utf-8'));
     //socket.send(message.toString('utf-8')) //나에게만 메시지를 다시 보내주는 코드
-    sockets.forEach(asocket => {
-      asocket.send(message.toString('utf-8')); //연결된 모든 connection에게 메시지를 보내줌
-    });
+    switch (message.type) {
+      case 'new_message':
+        sockets.forEach(asocket => {
+          asocket.send(`${socket.nickName}: ${message.payload}`); //연결된 모든 connection에게 메시지를 보내줌
+        });
+        break;
+      case 'nickName':
+        console.log('this is nickname :', message.type, message.payload);
+        socket['nickName'] = message.payload;
+        break;
+    }
   });
 });
 server.listen(3000, handleListen);
