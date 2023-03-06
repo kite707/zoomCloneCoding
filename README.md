@@ -38,3 +38,9 @@ const server = http.createServer(app);
 const wss = SocketIo(server);
 ```
 
+**Socket.io의 기능**
+- 연결이 끊어질 경우 계속해서 재연결을 시도
+- WS를 이용할 때는 String만 전송 가능, 하지만 Socket.io는 Object 전송 가능
+- 서버에서 작업이 끝날 경우 인식 가능
+
+
