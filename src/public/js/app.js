@@ -2,13 +2,22 @@ const socket = io();
 
 const welcome = document.getElementById('welcome');
 const form = welcome.querySelector('form');
+const room = document.getElementById('room');
+
+room.hidden = true;
+
+let roomName;
+const showRoom = () => {
+  room.hidden = false;
+  welcome.hidden = true;
+  const roomTitle = room.querySelector('h3');
+  roomTitle.innerHTML = roomName;
+};
 
 form.addEventListener('submit', handleRoomNameSubmit);
 function handleRoomNameSubmit(event) {
   event.preventDefault();
-  const roomName = form.querySelector('input');
-  socket.emit('room', { payload: roomName.value }, () => {
-    console.log('server is done, function name is end');
-  });
+  roomName = form.querySelector('input').value;
+  socket.emit('enter_room', roomName, showRoom);
   roomName.value = '';
 }
