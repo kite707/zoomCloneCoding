@@ -11,13 +11,30 @@ const showRoom = () => {
   room.hidden = false;
   welcome.hidden = true;
   const roomTitle = room.querySelector('h3');
-  roomTitle.innerHTML = roomName;
+  roomTitle.innerHTML = `Room ${roomName}`;
 };
 
-form.addEventListener('submit', handleRoomNameSubmit);
+function addMessage(message) {
+  const ul = room.querySelector('ul');
+  const li = document.createElement('li');
+  li.innerText = message;
+  ul.appendChild(li);
+}
+
+const done = message => {
+  console.log(message);
+};
+
 function handleRoomNameSubmit(event) {
   event.preventDefault();
-  roomName = form.querySelector('input').value;
-  socket.emit('enter_room', roomName, showRoom);
-  roomName.value = '';
+  input = form.querySelector('input');
+  socket.emit('enter_room', input.value, showRoom);
+  roomName = input.value;
+  input.value = '';
 }
+
+form.addEventListener('submit', handleRoomNameSubmit);
+
+socket.on('welcome', () => {
+  addMessage('someone joined!');
+});
