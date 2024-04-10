@@ -1,8 +1,8 @@
 //서버단 코드
 import express from 'express';
 import http from 'http';
-import SocketIo from 'socket.io';
-
+import { Server } from 'socket.io';
+import { instrument } from '@socket.io/admin-ui';
 const app = express();
 
 //pug 설정
@@ -16,7 +16,16 @@ app.use('/public', express.static(__dirname + '/public'));
 const handleListen = () => console.log('server is running on port 3000');
 
 const httpServer = http.createServer(app);
-const wsServer = SocketIo(httpServer);
+const wsServer = new Server(httpServer, {
+  cors: {
+    origin: ['https://admin.socket.io'],
+    credentials: true,
+  },
+});
+
+instrument(wsServer, {
+  auth: false,
+});
 
 function publicRooms() {
   const {

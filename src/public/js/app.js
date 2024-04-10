@@ -3,6 +3,7 @@ const socket = io();
 const welcome = document.getElementById('welcome');
 const form = welcome.querySelector('form');
 const room = document.getElementById('room');
+
 let roomName;
 room.hidden = true;
 
@@ -48,9 +49,7 @@ const showRoom = () => {
   nameForm.addEventListener('submit', handleNicknameSubmit);
 };
 
-const done = message => {
-  console.log(message);
-};
+
 
 function handleRoomNameSubmit(event) {
   event.preventDefault();
