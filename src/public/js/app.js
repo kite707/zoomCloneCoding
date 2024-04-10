@@ -31,6 +31,11 @@ function handleNicknameSubmit(event) {
   input.value = '';
 }
 
+const changeRoomTitle = cnt => {
+  const roomTitle = room.querySelector('h3');
+  roomTitle.innerHTML = `Room ${roomName} (${cnt})`;
+};
+
 const showRoom = () => {
   room.hidden = false;
   welcome.hidden = true;
@@ -57,11 +62,13 @@ function handleRoomNameSubmit(event) {
 
 form.addEventListener('submit', handleRoomNameSubmit);
 
-socket.on('welcome', user => {
+socket.on('welcome', (user, cnt) => {
   addMessage(`${user} joined!`);
+  changeRoomTitle(cnt);
 });
-socket.on('bye', user => {
+socket.on('bye', (user, cnt) => {
   addMessage(`${user} left!`);
+  changeRoomTitle(cnt);
 });
 
 socket.on('new_message', msg => {
