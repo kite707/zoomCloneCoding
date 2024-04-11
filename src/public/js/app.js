@@ -3,16 +3,35 @@ const socket = io();
 const myFace = document.getElementById("myFace");
 const muteBtn = document.getElementById("mute");
 const cameraBtn = document.getElementById("camera");
-const selectCamera = document.getElementById("cameras");
-
+const camerasSelect = document.getElementById("cameras");
 const call = document.getElementById("call");
 
 call.hidden = true;
+
 let myStream;
 let muted = false;
 let cameraOff = false;
 let roomName;
 let myPeerConnection;
+
+async function getCameras() {
+  try {
+    const devices = await navigator.mediaDevices.enumerateDevices();
+    const cameras = devices.filter(device => device.kind === "videoinput");
+    const currentCamera = myStream.getVideoTracks()[0];
+    cameras.forEach(camera => {
+      const option = document.createElement("option");
+      option.value = camera.deviceId;
+      option.innerText = camera.label;
+      if (currentCamera.label === camera.label) {
+        option.selected = true;
+      }
+      camerasSelect.appendChild(option);
+    });
+  } catch (e) {
+    console.log(e);
+  }
+}
 
 async function getMedia(deviceId) {
   const initialConstrains = {
@@ -34,26 +53,6 @@ async function getMedia(deviceId) {
   }
 }
 
-async function getCameras() {
-  try {
-    const devices = await navigator.mediaDevices.enumerateDevices();
-    const cameras = devices.filter(device => device.kind == "videoinput");
-    const currentCamera = myStream.getVideoTracks()[0];
-    cameras.forEach(camera => {
-      const option = document.createElement("option");
-      option.value = camera.deviceId;
-      option.innerText = camera.label;
-      if (currentCamera.label === camera.label) {
-        option.selected = true;
-      }
-      selectCamera.appendChild(option);
-    });
-    console.log(cameras);
-  } catch (error) {
-    console.log(error);
-  }
-}
-
 function handleMuteClick() {
   myStream.getAudioTracks().forEach(track => (track.enabled = !track.enabled));
   if (!muted) {
@@ -64,29 +63,27 @@ function handleMuteClick() {
     muted = false;
   }
 }
-
 function handleCameraClick() {
   myStream.getVideoTracks().forEach(track => (track.enabled = !track.enabled));
-  if (!cameraOff) {
-    muteBtn.innerText = "Turn Camera On";
-    cameraOff = true;
-    getCameras();
-  } else {
-    muteBtn.innerText = "Turn Camera Off";
+  if (cameraOff) {
+    cameraBtn.innerText = "Turn Camera Off";
     cameraOff = false;
+  } else {
+    cameraBtn.innerText = "Turn Camera On";
+    cameraOff = true;
   }
 }
 
 async function handleCameraChange() {
-  console.log(selectCamera.value);
-  await getMedia(selectCamera.value);
+  await getMedia(camerasSelect.value);
 }
 
 muteBtn.addEventListener("click", handleMuteClick);
 cameraBtn.addEventListener("click", handleCameraClick);
-selectCamera.addEventListener("input", handleCameraChange);
+camerasSelect.addEventListener("input", handleCameraChange);
 
-//Welcome Form (join a room)
+// Welcome Form (join a room)
+
 const welcome = document.getElementById("welcome");
 const welcomeForm = welcome.querySelector("form");
 
@@ -94,7 +91,6 @@ async function initCall() {
   welcome.hidden = true;
   call.hidden = false;
   await getMedia();
-
   makeConnection();
 }
 
@@ -106,31 +102,52 @@ async function handleWelcomeSubmit(event) {
   roomName = input.value;
   input.value = "";
 }
+
 welcomeForm.addEventListener("submit", handleWelcomeSubmit);
 
-//Socket Code
-//peerA
+// Socket Code
+
 socket.on("welcome", async () => {
   const offer = await myPeerConnection.createOffer();
-  console.log("sent offer");
   myPeerConnection.setLocalDescription(offer);
+  console.log("sent the offer");
   socket.emit("offer", offer, roomName);
 });
 
-socket.on("answer", answer => {
-  myPeerConnection.setRemoteDescription(answer);
-});
-
-//peerB
 socket.on("offer", async offer => {
+  console.log("received the offer");
   myPeerConnection.setRemoteDescription(offer);
   const answer = await myPeerConnection.createAnswer();
   myPeerConnection.setLocalDescription(answer);
   socket.emit("answer", answer, roomName);
+  console.log("sent the answer");
 });
 
-//RTC Code
+socket.on("answer", answer => {
+  console.log("received the answer");
+  myPeerConnection.setRemoteDescription(answer);
+});
+
+socket.on("ice", ice => {
+  console.log("received candidate");
+  myPeerConnection.addIceCandidate(ice);
+});
+
+// RTC Code
+
 function makeConnection() {
   myPeerConnection = new RTCPeerConnection();
+  myPeerConnection.addEventListener("icecandidate", handleIce);
+  myPeerConnection.addEventListener("addstream", handleAddStream);
   myStream.getTracks().forEach(track => myPeerConnection.addTrack(track, myStream));
+}
+
+function handleIce(data) {
+  console.log("sent candidate");
+  socket.emit("ice", data.candidate, roomName);
+}
+
+function handleAddStream(data) {
+  const peerFace = document.getElementById("peerFace");
+  peerFace.srcObject = data.stream;
 }
