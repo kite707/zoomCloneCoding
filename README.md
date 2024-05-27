@@ -43,9 +43,3 @@ const wss = SocketIo(server);
 - WS를 이용할 때는 String만 전송 가능, 하지만 Socket.io는 Object 전송 가능
 - 서버에서 작업이 끝날 경우 인식 가능
 
-
-## CHAPTER.3 Video call
-
-### To do
-1. 유저로부터 비디오 영상 가져오기
-2. 마이크 음소거 토글, 카메라 토글 버튼 만들기
